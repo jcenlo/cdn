@@ -14,7 +14,7 @@
     'top-right': 'position: fixed; top: 20px; right: 20px; line-height: 0; padding: 7px; display: none;'
   };
 
-  // Inyectamos el CSS necesario, utilizando la variable de color
+  // Inyectamos el CSS necesario, sin restringir el overflow del contenedor padre
   var css = `
     /* Transición del contenedor */
     #infoDataBox {
@@ -24,11 +24,11 @@
     .sidebarInfo {
       max-width: 480px;
       position: fixed;
-      background-color: ${widgetBgColor}; /* Color configurable */
+      background-color: ${widgetBgColor};
       border-radius: 5px;
       border: 1px solid #ccc;
       z-index: 2000;
-      overflow-y: hidden;
+      overflow: visible;
       box-shadow: -8px 8px 41px -16px rgba(66, 68, 90, 1);
       display: block;
       opacity: 1;
@@ -41,10 +41,11 @@
   styleEl.appendChild(document.createTextNode(css));
   document.head.appendChild(styleEl);
 
-  // Función para generar el SVG del botón de apertura
+  // Función para generar el SVG del botón de apertura, con rotación según menuSide
   function getOpenButtonSVG() {
+    var rotationStyle = menuSide === 'right' ? 'transform: rotate(180deg);' : '';
     return `
-      <svg fill="#1C2033" width="30" height="30" version="1.1"
+      <svg style="${rotationStyle}" fill="#1C2033" width="30" height="30" version="1.1"
            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
         <g>
           <path d="M35.2,20.5c-0.9-0.9-2.3-0.9-3.2,0c-0.9,0.9-0.9,2.3,0,3.2l6,6.1H20.7c-1.2,0-2.2,1-2.2,2.2
@@ -58,7 +59,6 @@
       </svg>`;
   }
 
-  // Función para generar el SVG del botón de cierre
   function getCloseButtonSVG() {
     return `
       <svg fill="#1C2033" width="25" height="25" version="1.1"
@@ -84,13 +84,12 @@
   var widgetDiv = document.createElement('div');
   widgetDiv.id = 'infoDataBox';
   widgetDiv.className = 'sidebarInfo';
-  // Inserta aquí el contenido HTML que necesites (se muestra un ejemplo simplificado)
   widgetDiv.innerHTML = `
     <div style="padding: 20px; display: flex; justify-content: space-between; align-items: center;">
       <h4 style="margin: 0;">Información básica sobre Protección de Datos</h4>
       <span id="closeInfoData" style="cursor:pointer;">${getCloseButtonSVG()}</span>
     </div>
-        <div style="padding: 20px; padding-top: 0; overflow-y: scroll; height: 100%;">
+        <div style="padding: 20px; padding-top: 0; overflow-y: auto; height: 100%;">
 
 
             <table class="table mb-0" style="font-size:14px">
@@ -385,7 +384,7 @@
                 </tbody>
             </table>
         </div>
-  `;
+`;
 
   // Funciones para abrir y cerrar el widget
   function openInfoData() {
